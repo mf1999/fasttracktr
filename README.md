@@ -1,10 +1,6 @@
 # FastTrackTr
 
 <p align="center">
-  <img src="assets/overview.png" alt="FastTrackTr Overview" width="800"/>
-</p>
-
-<p align="center">
   <strong>FastTrackTr: Fast Multi-Object Tracking with Transformer Trajectory Modeling</strong>
 </p>
 
@@ -24,13 +20,6 @@
 ## Overview
 
 FastTrackTr is a fast and efficient multi-object tracking framework built on transformer architectures. It leverages trajectory modeling with RT-DETR as the detection backbone for real-time multi-object tracking on benchmarks such as DanceTrack, SportsMOT, and MOT17.
-
-## Model Zoo
-
-| Model | Dataset | HOTA | MOTA | IDF1 | Config |
-|-------|---------|------|------|------|--------|
-| R50-FastTrackTr | DanceTrack | - | - | - | `configs/r50_rt_detr_rtmot_dancetrack.yaml` |
-| R18-FastTrackTr | DanceTrack | - | - | - | `configs/r18_fasttracktr_dancetrack.yaml` |
 
 ## Installation
 
@@ -142,12 +131,16 @@ fasttracktr/
 If you find this work useful, please cite our paper:
 
 ```bibtex
-@article{fasttracktr2026,
-  title={FastTrackTr: Fast Multi-Object Tracking with Transformer Trajectory Modeling},
-  author={Liao, Pan and others},
-  journal={IEEE},
-  year={2026}
-}
+@ARTICLE{fasttracktr2026,
+  author={Liao, Pan and Yang, Feng and Wu, Di and Yu, Jinwen and Li, Xingxin and Zhang, Dingwen},
+  journal={IEEE Transactions on Industrial Informatics}, 
+  title={FastTrackTr: Real-Time Multiobject Tracking With Transformers for Real World}, 
+  year={2026},
+  volume={22},
+  number={3},
+  pages={1817-1827},
+  keywords={Transformers;Decoding;Real-time systems;Accuracy;Target tracking;Computer architecture;Computational modeling;Feature extraction;Training;Object recognition;Multiobject tracking (MOT);real-time;transformers},
+  doi={10.1109/TII.2025.3631698}}
 ```
 
 ## License
