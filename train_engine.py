@@ -24,7 +24,7 @@ from torch.optim import AdamW
 from torch.optim.lr_scheduler import MultiStepLR
 from log.logger import Logger, ProgressLogger
 from log.log import Metrics, TPS
-from eval_engine_cross import evaluate_one_epoch
+from eval_engine import evaluate_one_epoch
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.checkpoint import checkpoint
 from tqdm import tqdm
@@ -383,7 +383,7 @@ def train_one_epoch(config: dict, model: MOTIP, logger: Logger,
                 # 根据概率进行取反，保持可见的位置为 0
                 # 对于需要遮掩的部分进行取反
                 # Create a mask for inversion
-                mask_inversion = rand_vals[a] < specific_inversion_probabilities
+                mask_inversion = rand_vals < specific_inversion_probabilities
                 mask[a, mask_inversion] = torch.where(mask[a, mask_inversion] == 0,
                                                       float('-inf'),
                                                       0)  # Invert based on the condition
@@ -540,7 +540,7 @@ def train_one_epoch(config: dict, model: MOTIP, logger: Logger,
                             id_loss_ = id_criterion(pred_id_words, gt_id_words, emb_for_reid)
                         else:
                             id_loss_ += id_criterion(pred_id_words, gt_id_words, emb_for_reid)
-                    id_loss_ = id_loss_ / x
+                    id_loss_ = id_loss_ / (x + 1)
                     id_loss += id_loss_
         if get_model(model).detr.multi_task_loss is None or id_loss == 0:
             loss = detr_loss  #+ id_loss * id_criterion.weight
@@ -571,15 +571,13 @@ def train_one_epoch(config: dict, model: MOTIP, logger: Logger,
 
         # Parameters update:
         if (i + 1) % config["ACCUMULATE_STEPS"] == 0:
-            optimizer.step()
-            optimizer.zero_grad()
             if clip_max_norm > 0:
                 detr_grad_norm = torch.nn.utils.clip_grad_norm_(detr_params, clip_max_norm)
                 other_grad_norm = torch.nn.utils.clip_grad_norm_(other_params, clip_max_norm)
                 metrics["detr_grad_norm"].update(detr_grad_norm.item())
                 metrics["other_grad_norm"].update(other_grad_norm.item())
-            else:
-                pass
+            optimizer.step()
+            optimizer.zero_grad()
 
         iter_end_timestamp = TPS.timestamp()
         tps.update(iter_end_timestamp - iter_start_timestamp)
@@ -665,7 +663,6 @@ def generate_match_instances(match_idxs, infos, detr_outputs):
 #     ]
 #     return param_groups
 
-import re
 
 def get_param_groups(model: nn.Module, config) -> list[dict]:
     def match_names(name, key_names):

@@ -14,7 +14,7 @@ from log.logger import Logger, ProgressLogger
 from log.log import Metrics
 from utils.utils import is_distributed, distributed_rank, yaml_to_dict, \
     distributed_world_size, is_main_process, distributed_world_rank
-from submit_engine_cross import submit_one_seq, get_seq_names
+from submit_engine import submit_one_seq, get_seq_names
 import subprocess
 import sys
 

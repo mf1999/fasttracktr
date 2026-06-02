@@ -25,7 +25,7 @@ class FastTrackTr(nn.Module):
         super().__init__()
 
         self.num_id_vocabulary = config["DETR_NUM_QUERIES"]  # how many id words
-        self.training_num_id = config["DETR_NUM_QUERIES"] if "DETR_NUM_QUERIES" not in config else config[
+        self.training_num_id = config["TRAINING_NUM_ID"] if "TRAINING_NUM_ID" in config else config[
             "DETR_NUM_QUERIES"]
         self.num_classes = config["NUM_CLASSES"]
         self.max_temporal_length = config["MAX_TEMPORAL_LENGTH"] if "MAX_TEMPORAL_LENGTH" in config \
