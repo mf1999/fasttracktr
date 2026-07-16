@@ -15,7 +15,12 @@ import torch.nn.functional as F
 from torch.autograd import Function
 from torch.autograd.function import once_differentiable
 
-import MultiScaleDeformableAttention as MSDA
+try:
+    import MultiScaleDeformableAttention as MSDA
+except ImportError:
+    # Compiled extension not built (see models/ops/make.sh). Only the pure-PyTorch
+    # ms_deform_attn_core_pytorch below is usable in that case.
+    MSDA = None
 
 
 class MSDeformAttnFunction(Function):

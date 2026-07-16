@@ -142,6 +142,20 @@ class MOTDataset(Dataset):
                 }
                 for seq in seq_names
             }
+        elif dataset == "Vessel":
+            # AnalizaDinamicnihScena's MOTdataset (maritime, fixed-camera). GT is standard
+            # MOTChallenge CSV: frame,id,x,y,w,h,conf,class,visibility.
+            split_dir = os.path.join(dataset_dir, split)
+            seq_names = os.listdir(split_dir)
+            structure["seqs"] = {
+                seq: {
+                    "images_dir": os.path.join(split_dir, seq, "img1"),
+                    "gt_path": os.path.join(split_dir, seq, "gt", "gt.txt"),
+                    "images_name": os.listdir(os.path.join(split_dir, seq, "img1")),
+                    "max_frame": max([int(_[:-4]) for _ in os.listdir(os.path.join(split_dir, seq, "img1"))])
+                }
+                for seq in seq_names
+            }
         else:
             raise NotImplementedError(f"Do not support dataset '{dataset}'.")
         return structure
@@ -180,6 +194,12 @@ class MOTDataset(Dataset):
                                 f, i, x, y, w, h = line.split(" ")
                                 label = 0
                                 v = 1
+                            elif dataset_name == "Vessel":
+                                # frame,id,x,y,w,h,conf,class,visibility
+                                f, i, x, y, w, h, conf, _, v = line.split(",")
+                                if float(conf) == 0:
+                                    continue  # ignore region, per CLAUDE.md
+                                label = 0
                             else:
                                 raise NotImplementedError(f"Can't analysis the gts of dataset '{dataset_name}'.")
                             # format, and write into infos

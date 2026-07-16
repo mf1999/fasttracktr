@@ -125,7 +125,12 @@ def submit_one_seq(
         image_max_size: int = 1333,
         fake_submit: bool = False,
         inference_ensemble: int = 0,
-        use_plus_tracker=True,
+        # False -> JDETracker: Hungarian match on the model's own ID-embedding similarity + Kalman
+        # gating + EMA update (paper Section III.D). True -> JDETrackerPlus: a Hybrid-SORT/OC-SORT-style
+        # motion+confidence associator that never reads detr_pred_id_words, i.e. it ignores the network's
+        # learned appearance embeddings entirely. The upstream repo hardcoded True, which silently drops
+        # the paper's described association mechanism at inference time.
+        use_plus_tracker=False,
 ):
     os.makedirs(os.path.join(outputs_dir, "tracker"), exist_ok=True)
     seq_dataset = SeqDataset(seq_dir=seq_dir, dataset=dataset, width=image_max_size)
